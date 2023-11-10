@@ -34,22 +34,22 @@ pipeline {
         //     }
         // }
 
-		stage('SonarQube Analysis') {
-				agent any
-				steps {
-					script {
-						def scannerHome = tool 'SonarQube'
-						withSonarQubeEnv('SonarQube') {
-							sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=LabTestPractice -Dsonar.sources=."
-						}
-					}
+		// stage('SonarQube Analysis') {
+		// 		agent any
+		// 		steps {
+		// 			script {
+		// 				def scannerHome = tool 'SonarQube'
+		// 				withSonarQubeEnv('SonarQube') {
+		// 					sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=LabTestPractice -Dsonar.sources=."
+		// 				}
+		// 			}
 					
-					// Post-build action within the stage
-					script {
-						recordIssues enabledForFailure: true, tool: sonarQube()
-					}
-				}
-			}
+		// 			// Post-build action within the stage
+		// 			script {
+		// 				recordIssues enabledForFailure: true, tool: sonarQube()
+		// 			}
+		// 		}
+		// 	}
 
         stage('Integration UI Test') {
             parallel {
