@@ -1,70 +1,61 @@
-<?php 
-	session_start();
-	
-	if(isset($_POST['submit']))
-	{
-		if((isset($_POST['email']) && $_POST['email'] !='') && (isset($_POST['password']) && $_POST['password'] !=''))
-		{
-			$email = trim($_POST['email']);
-			$password = trim($_POST['password']);
-			
-			if($email == "user@example.com")
-			{	
-				if($password == "password1234")
-				{
-					$_SESSION['user_id'] = $email;
-					
-					header('location:dashboard.php');
-					exit;
-					
-				}
-			}
-			$errorMsg = "Login failed";
-		}
-	}
-?>
+<?php
 
+function validateInput($input)
+{
+    //IF INPUT IS <SCRIPT> OR <SCRIPT/> OR </SCRIPT> OR </SCRIPT/> RETURN INVALID INPUT
+    if (preg_match("/<script>/i", $input) || preg_match("/<script\/>/i", $input) || preg_match("/<\/script>/i", $input) || preg_match("/<\/script\/>/i", $input)) {
+        $input = "Invalid Input";
+    }
+
+    // PREVENT SQL INJECTION ATTACKS
+    if (!preg_match('/^[a-zA-Z0-9]+$/', $input)) {
+        $input = "Invalid Input";
+    }
+    // ELSE RETURN INPUT
+    return $input;
+}
+
+if (isset($_POST['submit'])) {
+    // Use trim to remove leading and trailing whitespaces
+    $searchTerm = trim($_POST['search']);
+    
+    // Validate the input
+    $searchTerm = validateInput($searchTerm);
+
+    // If the input is invalid, CLEAR the search term and stay on the home page
+    if ($searchTerm == "Invalid Input") {
+        $searchTerm = "";
+    }
+    // If the input is valid, go to a new page to display the search term
+    else {
+        header("Location: results.php?searchTerm=" . urlencode($searchTerm));
+        exit();
+    }
+   
+}
+?>
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Login Page | PHP Login and logout example with session</title>
-<link rel="stylesheet" href="style.css">
+    <title>Home Page</title>
 </head>
 
 <body>
-	
-	<div class="container">
-		<h1>PHP Login and Logout with Session</h1>
-		<?php 
-			if(isset($errorMsg))
-			{
-				echo "<div class='error-msg'>";
-				echo $errorMsg;
-				echo "</div>";
-				unset($errorMsg);
-			}
-			
-			if(isset($_GET['logout']))
-			{
-				echo "<div class='success-msg'>";
-				echo "You have successfully logout";
-				echo "</div>";
-			}
-		?>
-		<form action="<?php echo $_SERVER['PHP_SELF']?>" method="post">
-			<div class="field-container">
-				<label>Email</label>
-				<input type="email" name="email" required placeholder="Enter Your Email">
-			</div>
-			<div class="field-container">
-				<label>Password</label>
-				<input type="password" name="password" required placeholder="Enter Your Password">
-			</div>
-			<div class="field-container">
-				<button type="submit" name="submit">Submit</button>
-			</div>
-			
-		</form>
-	</div>
+
+    <div>
+        <h1>PHP Website</h1>
+        <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
+            <div>
+                <label>Search</label>
+                <input type="text" name="search" required placeholder="Enter Your Search Term">
+            </div>
+            <div>
+                <button type="submit" name="submit">Submit</button>
+            </div>
+
+        </form>
+    </div>
 </body>
+
 </html>

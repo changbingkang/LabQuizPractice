@@ -23,11 +23,12 @@ public class AppTest
 {
 	WebDriver driver; 
 	WebDriverWait wait; 
-	String url = "http://172.30.141.45";
-	String validEmail = "user@example.com";
-	String validPassword = "password1234";
-	String invalidEmail = "none@example.com";
-	String invalidPassword = "password";
+	// String url = "http://192.168.50.207";
+	String url = "http://172.20.10.2";
+
+    String validSearchTerm = "ValidSearch";
+    String xssAttackTerm = "<script>alert('XSS Attack');</script>";
+    String sqlInjectionTerm = "'; DROP TABLE users; --";
 
     @Before
     public void setUp() { 
@@ -41,45 +42,62 @@ public class AppTest
 	}	 
 	
     @Test
-    public void testLoginWithValidEmailValidPassword() 
+    public void testValidSearchTerm() 
 		throws InterruptedException { 
 
 		//get web page
 		driver.get(url);
 		//wait until page is loaded or timeout error
-		wait.until(ExpectedConditions.titleContains("Login Page |")); 
+		wait.until(ExpectedConditions.titleContains("Home Page")); 
 
 		//enter input
-		driver.findElement(By.name("email")).sendKeys(validEmail);
-		driver.findElement(By.name("password")).sendKeys(validPassword);
+		driver.findElement(By.name("search")).sendKeys(validSearchTerm);
 		//click submit
 		driver.findElement(By.name("submit")).submit();
 	
 		//check result 
-		String expectedResult = "Dashboard |"; 
+		String expectedResult = "Search Results"; 
 		boolean isResultCorrect = wait.until(ExpectedConditions.titleContains(expectedResult)); 
 		assertTrue(isResultCorrect == true); 
 	}
 		
 	@Test
-    public void testLoginWithValidEmailInvalidPassword() 
+    public void testXSSAttackTerm() 
 		throws InterruptedException { 
 
 		//get web page
 		driver.get(url);
 		//wait until page is loaded or timeout error
-		wait.until(ExpectedConditions.titleContains("Login Page |")); 
+		wait.until(ExpectedConditions.titleContains("Home Page")); 
 
 		//enter input
-		driver.findElement(By.name("email")).sendKeys(validEmail);
-		driver.findElement(By.name("password")).sendKeys(invalidPassword);
+		driver.findElement(By.name("search")).sendKeys(xssAttackTerm);
 		//click submit
 		driver.findElement(By.name("submit")).submit();
 	
 		//check result
-		By errorMsgId = By.className("error-msg");
-		String expectedResult = "Login failed"; 
-		boolean isResultCorrect = wait.until(ExpectedConditions.textToBe(errorMsgId, expectedResult)); 
+		String expectedResult = "Home Page"; 
+		boolean isResultCorrect = wait.until(ExpectedConditions.titleContains(expectedResult)); 
+		assertTrue(isResultCorrect == true); 
+	}
+
+	@Test
+    public void testSQLInjectionTerm() 
+		throws InterruptedException { 
+
+		//get web page
+		driver.get(url);
+		//wait until page is loaded or timeout error
+		wait.until(ExpectedConditions.titleContains("Home Page")); 
+
+		//enter input
+		driver.findElement(By.name("search")).sendKeys(sqlInjectionTerm);
+		//click submit
+		driver.findElement(By.name("submit")).submit();
+	
+		//check result
+		String expectedResult = "Home Page"; 
+		boolean isResultCorrect = wait.until(ExpectedConditions.titleContains(expectedResult)); 
 		assertTrue(isResultCorrect == true); 
 	}
 
